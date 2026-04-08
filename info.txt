@@ -1,0 +1,205 @@
+# Learn about containers. Here we will be learning about Docker. 
+
+ # Docker:
+        -- install: 
+                -- Guide:   `https://docs.docker.com/`
+                -- install:    `https://docs.docker.com/desktop/setup/install/windows-install/ `
+                                (use AI chat for it at docker homepage)
+                -- WSL > hyper v 
+        
+        -- Docker Images:
+                -- these are same as disk in old days. 
+                -- We can push these images on docker hub  `https://hub.docker.com/`
+                        then can use anytime anywhere.
+        
+        -- Docker Container:
+                -- when we install this image then a small stanalone space or mini computer which is running the CD containt, that can be a software as well.
+
+        -- CMD: 
+                -- check the docker     `docker -v`   or can read from   `https://docs.docker.com/reference/cli/docker/version/`
+                -- `docker pull <imageName>`:-> pull/download the image/repo from docker hub (can be mine or someone else's). It does not install that
+                        -- ` docker pull python`
+                        -- ` docker pull postgres`
+                        -- run this in cmd to install this specific docker.
+                -- "tag" refers to specific version
+
+        
+                -- Docker is not composed of a single image, it has varity of layers. 
+                        -- Like you are installing 2 docker images Python on wind, postgres on wind     
+                                -- Here win is common, so only upper layers are changed
+        
+                -- read more about `docker ps`, `docker image`, `docker run` commands in doc
+                
+                -- `docker run postgres`  OR `docker run postgres:LATEST`
+                        -- other versions are 
+                                -- `docker run postgres:3.2` (specific version from images pulled in computer)
+                                -- `docker run postgres:3.2.RELEASE` (specific released version from images pulled in computer)
+                                -- `docker run postgres:3.2-alpine` ()
+                        
+                        -- It may throw error for postgres but not for ubuntu, Python, etc. Because it will need a password to access these. 
+                        -- open hub and go to postgres image and there check the command `https://hub.docker.com/_/postgres`
+                                -- command: `docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d postgres`
+                                        -- `--name <name>` is to give this container any name 
+                                        -- `-e POSTGRES_PASSWORD=mysecretpassword`    means set "POSTGRES_PASSWORD" as environment variable
+                                        -- `-d` when we open container than it keeps out terminal busy, we can not run our any other command in this termial which is connected to container. 
+                                                -- "-d" refers to detach mode. Means it says to conatainer to free our terminal and run container in back process.
+                        -- Everytime we exit a container (ctrl + c) and again call a container then it spins a new container if --name is not given. 
+                                -- we need to run these from docker app.
+                        
+                        -- `docker ps` will provide the list of all running docker containers.
+
+                        -- `docker stop <container-name/ID>`  --> To stop the container
+
+                        -- `docker run <container-name/ID>`  --> To rerun the container
+
+                        -- `docker run --name some-postgres2 -e POSTGRES_PASSWORD=mysecretpassword -d postgres:13.8`
+                                        -- if this image of 13.8 is not available then "run" command "pull" this and then create a container.
+
+                        -- Here if we do "docker ps" after creating 2 running postgres containers. Then we see both are running on same port. 
+                                -- postgres runs on same port as default. 
+                                -- If 2 or more services are running on same port then it may create conflict. 
+                                -- To resolve this we need to find a way to provide the port information.
+                                        -- This is called   " PORT MAPPING" concept.
+
+                        -- `docker container ls` also provide same result as `docker ps`.
+                        -- `docker container stop <container-name/ID>`    --> to stop a container
+                        -- `docker container ls -a` --> provide list of all containers (running + non-running)
+                
+                -- `docker container prune`  --> to remove all stopped containers
+
+                -- `docker volume ls` --> provide the list of all the volumes
+                        -- a space where container keeps its data or info.
+        
+        -- Docker Vs VM:
+                 -- VM is bloated/very-heavy.
+                        -- running an entire OS system on top of an OS.
+                        -- include the entire kernal
+
+                -- Docker is lightweight.
+                        -- runs application on OS.
+                        -- It does not include entire Kernal, it just uses some functionality to run.
+                        -- Container is 
+                                -- Bare minimum functionality need to run or interact with host Kernal.
+                                                + 
+                                -- application we are going to use.
+
+
+        -- Mongo Cotaner:
+                -- ` docker run --name mono-name1 -p 4000:27017 -d mongo`
+                        -- Here "-p 4000:27017"
+                                -- "-p" repreents port
+                                -- "27017" is the default port of Mongo container.
+                                        -- Means if i want to connect to this mongo container inside this machine then use this port.
+                                -- "4000" is the port of my actual machine. If someone from outer world is accessing this container then use this port.
+        
+        -- Read more about `docker log`
+                --  `docker logs <container-name/ID>` --> To get the logs
+
+
+        -- connect "mongo" container with "mongo-express" container
+                -- `docker run -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password --name mongo-db --net mongo-network -d mongo`
+                                -- "--net mongo-network"  --> tells that this is the network name if some survice wants to connect to mongoDB.
+                                        -- think like what if both are running on different networks. Then we need this "--net" 
+                
+                -- Long commands like this can be entered as below way as well 
+
+                -- `docker run -d \     (enter as "\" won't let it run and exit)
+                        -p 8081:8081 \
+                        -e ME_CONFIG_MONGODB_ADMINUSERNAME=admin \
+                        -e ME_CONFIG_MONGODB_ADMINPASSWORD=password \
+                        -e ME_CONFIG_MONGODB_ADMIN_SERVER=mongo-db \
+                        --net mongo-network \ (same as we provided in mongo container)
+                        --name mongo-express \
+                        mongo-express`     (now enter)
+
+                
+        -- If we have multiple container we need to spin at same time or in same command then it is not an optimal way. 
+        -- we create a file and add these in that and then run that. this is called "Container Compose".
+
+# Docker compose:
+
+        -- install a plugin/extention in VS code "indent-rainbow"
+
+        -- create "<file-name>.yaml" file ex "docker-compose.yaml" 
+        -- For this file both above containers "mongo" and "mongo-express" are services 
+
+        -- We do not need to give network in compose file as compose automaiclly create a new network for all its services.
+                -- if we want to give a specific name then we can or else can use default one.
+        
+
+        -- To run this file:
+                -- `docker compose -f docker-compose.yaml`   (-f means giving this a filename)
+                        -- error as thi is not the command some params are missing
+                -- `docker compose -f docker-compose.yaml up`   
+                        -- error as this file do not know which container to run first.
+
+                -- we need to give dependency of "express" on 'mongo
+        
+        -- Compose automatically cleans the containers and spin new. 
+
+
+        -- Docker Volumes:
+                -- Generally datat from container does not persist means gets removed as we exit container.
+                -- But datat stored by container in volumes does not go away. 
+                        -- We do not know the path or id where this datat is stored as ID is big and confusing.
+
+                -- Here we want to do:
+                        -- provide a name for a volume or space. 
+                        -- store the datat of "mongo" into that volume.
+                        -- But datat from "express-mongo" not needed as it is there to just run the code. 
+
+                        -- Datat cleanup is best when we execute some code as it does not infect whole system or datat if code is corrupted.
+                        -- this defect code will wipe out with Container exit.
+
+                -- `mongo-data:/data/db`:
+                        -- "mongo-data" is the volume name 
+                        -- "/data/db" is the container path (for mongodb, different for postgres).
+                                -- Whenever a new container of mongodb is deployed or postgres.
+                                -- there is a specific path, only which these container or dbs store the values.
+                                -- this path and volume is permanent, regardless of container running or exit.
+
+        
+        -- `docker-compose -f docker-compose.yaml down"
+                -- remove the compose docker instance and remove all containers
+
+-- Amazone provides "Amazone Elastic Container Registry (ECR)" for private docker registery or hub same like docker hub.
+-- There are other options as well.
+
+
+
+
+
+
+
+
+# Practical:
+        -- Assuming we have a microservice or an application of Python flask running on port 3000.
+                -- we have "requirements.txt" file which has all deps we will need.
+        
+        -- create a docker file:
+                -- this is Python so to create a docker image for this application we need base image of python. 
+                -- After adding CMD command.
+        
+        -- open terminal (cmd) ==> 
+                -- `docker build -t <dockerhub-username>/<image-name>:latest .   ==> docker hub user name is usefule if we pushing to hub and want to make public
+                                OR
+                -- `docker build -t <image-name>:0.0.1.RELEASE .     
+                                ==> dot (.) in the end defines that the docker file based on which this image should be created is available in the current directory.
+                                        -- Path of "Dockerfile"
+        
+        -- check the image in docker app.
+
+        -- to run it:
+                -- `docker container -d -p 3000:3000 <image-name>
+                -- `docker container -d -p 4000:3000 <image-name>  (4000 is machine port and 3000 is the docker port)
+
+        -- ` docker container stop <container-ID>` to stop 
+
+        -- `docker push <dockerhub-username>/<image-name>:0.0.1.RELEASE` --> to push to docker hub
+
+-- this is not optimized way. Optimized way is use "caching' and all.
+
+
+-- Dockerfile for Node:
+        -- `RUN npm install`  
+        -- `CMD node index.js`

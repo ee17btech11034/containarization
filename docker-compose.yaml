@@ -1,0 +1,24 @@
+version: '3'  # 3 means latest of 3.x.x
+services:
+  mongo-db:
+    image: mongo:latest #mongo
+    ports: # provide ports in a list format
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin 
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo-data:/data/db # volume-name:defaultPathForMongoStorage
+  mongo-express:
+    image: mongo-express
+    restart: always # it will restart as it depends on mongo . it will restart and check untill it finds a connection
+    ports:
+      - "8081:8081"
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=password
+      - ME_CONFIG_MONGODB_ADMIN_SERVER=mongo-db
+# network # no need in compose file
+volumes:
+  mongo-data: # volume name
+    driver: local # storing datat in local drivers
