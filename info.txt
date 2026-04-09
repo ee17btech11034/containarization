@@ -203,3 +203,64 @@
 -- Dockerfile for Node:
         -- `RUN npm install`  
         -- `CMD node index.js`
+
+
+
+
+-- Additional informations:
+        -- `docker run -it ubuntu`  --> download/pull if image not available and then run a container 
+                --> "it" --> interactive mode me open karo, means container ke andar cmd ko ko "cd" kr do.
+                --> do "ctrl + d" -> i think it exit and stop the container
+
+        -- `docker container ls`  --> list of running containers 
+        -- `docker container ls -a`  --> list of all containers (running + non-running)
+
+        -- `docker start <containerID/name>`  -> restart the stopped container
+        -- `docker stop <containerID/name>`  -> stop the container
+
+        -- `docker exec <container-name/ID> ls`  --> we get the list of items in container and terminal returns to main dire (not inside container) 
+        
+        -- `docker exec -it <container-name/ID> bash`  --> we go in container and terminal open inside container (interactive mode)
+                        -- `mkdir`  or `ls`  or any other command we can run 
+
+        
+
+
+        -- `docker images`    or   `docker image ls`  
+                --> get the list of images inside this machine 
+        
+
+        -- Read more about "calcom", it may be useful for self hosting
+
+
+        -- PORT mapping:
+                -- Every container runs on a port which is inside this container. 
+                -- We need to expose this port, to use this container or access this container from outside 
+
+                -- `docker run -it -p 1220:1025 mailhog/mailhog`
+                        -- "-p <computerExposedPort>:<containerPort>"
+
+
+
+-- nodeJs application:==>
+        -- create `npm init` and then create main.js file 
+        -- create "Dockerfile"
+                -- Choose base image (mainly OS)
+                -- get the steps from google like commands to install NodeJs in ubuntu and erite them in file
+
+
+        -- `docker build -t ubuntu-nodejs .` --> create/build a image
+
+        -- `docker run -it ubuntu-nodejs` --> run it but we can not connect with "8000" port so
+        -- `docker run -it -p 8000:8000 ubuntu-nodejs` --> now we can do "localhost on port 8000
+        -- `docker run -it -e PORT=6000 -p 6000:8000 ubuntu-nodejs`  --> now it will run on 6000
+
+        -- `docker exec -it <id>`
+                -- take my inside the container  with terminal
+                -- run    `ls` 
+                -- run    `cat main.js`  --> show the containt inside this file
+
+
+
+# here we learnt by taking base image of ubuntu and then installing node. 
+# But if we have "nodejs" image then that can be our base image
