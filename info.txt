@@ -264,3 +264,105 @@
 
 # here we learnt by taking base image of ubuntu and then installing node. 
 # But if we have "nodejs" image then that can be our base image
+
+
+-- Caching:
+        -- Docker cache output of everystep/line in Dockerfile.
+        -- if we again try to create an image with any change in file then it will be very fast because of cache. 
+        -- that's why order is important. If we change containt of a file then below lines in Dockerfile will be executed again. 
+        -- this is called                "Layers Cahcing".
+
+
+
+# Docker network:
+        -- Docker uses these networks to talk to outer world over network.
+        -- Read more https://docs.docker.com/engine/network/drivers/
+
+        -- default it uses bridge mode. 
+
+        -- To check:    
+                -- `docker rn -it busybox`
+                        -- `ping google.com`
+
+                -- `docker network inspect bridge` --> can check the containers which are using this bridge mode. 
+
+                -- "bridge" is a connectivity between container and our machine.
+
+                -- `docker network ls` --> network/drivers available 
+
+                -- `docker run -it --network=host busybox`  -> means it did not get bridge , it is direcly connected to my machine 
+
+
+                # bridge Vs host:
+                        -- In bridge (default) mode, we need to expose PORT to connect :
+                                -- `docker run -it -p 3000:4000 abc` 
+                        
+                        -- in host mode, we do not need to expose these ports. 
+                                -- `docker run -it abc` 
+
+                                -- because the port on which container is running will be available in your local host because machine and host are on same network. 
+
+        
+        -- `docker run -it --network=none busybox`  --> this container does not have internet access 
+
+        -- Custome network:
+                -- `docker network create -d bridge <network-name>`
+                -- `docker network ls`
+
+        -- Containers on same network can communicate with each other.
+
+
+
+# Docker volumes:
+        -- container deletes its data as soon as we exit or delete it. 
+        -- to prevent it 
+        -- we can create a folder in machine and assign that to containers 
+
+        -- `docker run -it -v /Users/rasiwal/Desktop/test-folder:/home/abc ubuntu`
+                -->  "/home/abc" is inside the container
+                --> "/Users/rasiwal/Desktop/test-folder" is on main computer and is hosted on container path.
+
+                --> whatever change we make in container folder "/abc" will be done in "/test-folder"
+
+
+        -- We can create custom volumes as well.
+
+                -- `docker volume create my-vol`
+                -- `docker volume ls` 
+                -- `docker volume inspect my-vol`
+                -- `docker volume rm my-vol`  --> remove this volume
+
+
+                -- To use this volume:
+                        -- `docker run -d \
+                                 --name name1 \
+                                 --mount source=my-vol,target=/app \
+                                 nginx`
+
+
+# Layer Caching:
+        -- Order or layers (lines) matter. 
+        -- Here whenever we change in main.js then 'npm install' will run but it should only run when package.json or lock file got changed. So we can move this line above 
+
+
+# .dockerignore file:
+        -- similer to gitignore file.
+
+# Multi stage build:
+        -- Supoose we have multiple stages. 
+        -- We have TS file . 
+        -- If we create image with TS then it will be heavy. 
+        -- As we know TS is the buid step and JS we will get from TS files will be important for me to run. 
+
+        -- We create new Docker file and define:        
+
+
+        '''
+        FROM typescript as build  # can name them any
+
+        //steps for building it. (No entrypint will be there )
+
+
+        FROM node as runner
+
+        // now we can have all the code and entry point
