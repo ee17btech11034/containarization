@@ -366,3 +366,18 @@
         FROM node as runner
 
         // now we can have all the code and entry point
+
+
+
+        -- Example is Dockerfile. 
+                -- alpine image does not contain most of the things like "vim" in ubuntu. 
+                        -- These are light weight 
+                -- If we need some functionality then go for "slim"
+                -- if we want most of the commands of ubuntu then "ubuntu"
+
+        -- In multistage >
+                -- data of last stage remains in image. 
+
+
+
+# FROM scratch  # is useful when we want to run binary as we do not need anything 
